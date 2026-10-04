@@ -2,7 +2,8 @@ name: Build Android app
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -14,14 +15,19 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
-        with: { node-version: 22 }
+        with:
+          node-version: 22
       - uses: actions/setup-java@v4
-        with: { distribution: temurin, java-version: 17 }
+        with:
+          distribution: temurin
+          java-version: 17
       - uses: android-actions/setup-android@v3
       - run: npm ci
       - run: npx cap sync android
       - name: Write signing key
-        run: echo "${{ secrets.STUDY_KEYSTORE_B64 }}" | base64 -d > "$RUNNER_TEMP/study.keystore"
+        run: echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/study.keystore"
+        env:
+          KEYSTORE_B64: ${{ secrets.STUDY_KEYSTORE_B64 }}
       - name: Build signed APK
         working-directory: android
         env:
@@ -31,13 +37,19 @@ jobs:
           STUDY_KEY_PASSWORD: ${{ secrets.STUDY_KEYSTORE_PASSWORD }}
           APP_VERSION_CODE: ${{ github.run_number }}
           APP_VERSION_NAME: 1.0.${{ github.run_number }}
-        run: chmod +x gradlew && ./gradlew assembleRelease --no-daemon --quiet
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleRelease --no-daemon --quiet
       - name: Name the file
-        run: cp android/app/build/outputs/apk/release/app-release.apk StudyTracker-1.0.${{ github.run_number }}.apk && cp android/app/build/outputs/apk/release/app-release.apk StudyTracker-latest.apk
+        run: |
+          cp android/app/build/outputs/apk/release/app-release.apk "StudyTracker-1.0.${{ github.run_number }}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk StudyTracker-latest.apk
       - name: Publish release
-        env: { GH_TOKEN: ${{ github.token }} }
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VERSION: 1.0.${{ github.run_number }}
         run: |
           gh release delete latest --yes --cleanup-tag 2>/dev/null || true
-          gh release create latest StudyTracker-latest.apk StudyTracker-1.0.${{ github.run_number }}.apk \
-            --title "Study Tracker for Android 1.0.${{ github.run_number }}" \
-            --notes "Download **StudyTracker-latest.apk** on your Android phone, open it, and allow installing from this source if asked. Android 9 or newer."
+          gh release create latest StudyTracker-latest.apk "StudyTracker-$VERSION.apk" \
+            --title "Study Tracker for Android $VERSION" \
+            --notes "Download StudyTracker-latest.apk on your Android phone, open it, and allow installing from this source if asked. Android 9 or newer."
