@@ -1,0 +1,7 @@
+{
+  "appId": "app.studytrac",
+  "appName": "Study Tracker",
+  "webDir": "www",
+  "server": { "url": "https://studytrac.vercel.app/app?native=1", "cleartext": false, "allowNavigation": ["studytrac.vercel.app", "telegram.org", "oauth.telegram.org"] },
+  "android": { "allowMixedContent": false, "backgroundColor": "#f4f6f2" }
+}

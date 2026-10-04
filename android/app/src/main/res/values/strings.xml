@@ -1,0 +1,8 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Study Tracker</string>
+    <string name="title_activity_main">Study Tracker</string>
+    <string name="package_name">app.studytrac</string>
+    <string name="custom_url_scheme">app.studytrac</string>
+    <string name="guard_description">Keeps you in Study Tracker during a focus session. It only watches which app is in front while a session is running, and brings you back if you leave. It never reads screen content.</string>
+</resources>
