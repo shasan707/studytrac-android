@@ -37,7 +37,7 @@ public class StudyNativePlugin extends Plugin {
         r.put("platform", "android");
         r.put("version", Build.VERSION.SDK_INT);
         r.put("miui", isMiui());
-        r.put("appVersion", BuildConfig.VERSION_NAME);
+        try { r.put("appVersion", c.getPackageManager().getPackageInfo(c.getPackageName(), 0).versionName); } catch (Exception e) { r.put("appVersion", "?"); }
         r.put("lockActive", Prefs.lockActive(c));
         r.put("lockUntil", Prefs.lockUntil(c));
         r.put("distractions", Prefs.distractions(c));
